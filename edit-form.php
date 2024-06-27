@@ -191,8 +191,30 @@ foreach ($form_data['fields'] as $field) {
 			handle: '.handle'
 		});
 
-		document.querySelector('#formEditor').addEventListener('submit', function() {
-			// Ajoutez des vérifications ou des transformations de données avant la soumission si nécessaire
+		document.querySelector('#formEditor').addEventListener('submit', function(event) {
+			event.preventDefault();
+
+			var formData = new FormData(event.target);
+			formData.append('_ajax_nonce', '<?php echo wp_create_nonce("cocoform_save_form_nonce"); ?>');
+			formData.append('action', 'cocoform_save_form');
+
+			fetch(ajaxurl, {
+				method: 'POST',
+				body: new URLSearchParams(formData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('Formulaire modifié avec succès.');
+						window.location.href = '<?php echo admin_url('admin.php?page=cocoform'); ?>';
+					} else {
+						alert('Erreur : ' + data.data);
+					}
+				})
+				.catch(error => {
+					console.error('Erreur:', error);
+					alert('Erreur lors de la soumission du formulaire.');
+				});
 		});
 	});
 
@@ -217,5 +239,6 @@ foreach ($form_data['fields'] as $field) {
 		button.parentNode.remove();
 	}
 </script>
+
 </body>
 </html>

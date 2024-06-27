@@ -165,8 +165,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			handle: '.handle'
 		});
 
-		document.querySelector('#formCreator').addEventListener('submit', function() {
-			// Ici, vous pouvez ajouter des vérifications ou des transformations de données avant la soumission
+		document.querySelector('#formCreator').addEventListener('submit', function(event) {
+			event.preventDefault();
+
+			var formData = new FormData(event.target);
+			formData.append('_ajax_nonce', '<?php echo wp_create_nonce("cocoform_save_form_nonce"); ?>');
+			formData.append('action', 'cocoform_save_form');
+
+			fetch(ajaxurl, {
+				method: 'POST',
+				body: new URLSearchParams(formData)
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('Formulaire ajouté avec succès.');
+						window.location.href = '<?php echo admin_url('admin.php?page=cocoform'); ?>';
+					} else {
+						alert('Erreur : ' + data.data);
+					}
+				})
+				.catch(error => {
+					console.error('Erreur:', error);
+					alert('Erreur lors de la soumission du formulaire.');
+				});
 		});
 	});
 
@@ -191,5 +213,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		button.parentNode.remove();
 	}
 </script>
+
 </body>
 </html>
