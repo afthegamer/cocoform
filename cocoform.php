@@ -79,11 +79,13 @@ function cocoform_render_admin_page() {
 					if (!empty($formulaires)) {
 						foreach ($formulaires as $index => $formulaire) {
 							$form_name = $formulaire['name'];
-							$option_key = 'cocoform_' . sanitize_title($form_name); // Form key for URL
-							echo "<tr id='form-row-{$option_key}'>
-                                    <td>{$form_name}</td>
-                                    <td><a href='?page=cocoform&action=edit&id={$option_key}'>Modifier</a> | <button class='delete-form' data-form-id='{$option_key}'>Supprimer</button></td>
-                                    </tr>";
+							echo "<tr>
+                    <td>{$form_name}</td>
+                    <td>
+                        <a href='?page=cocoform&action=edit&id={$index}'>Modifier</a> |
+                        <a href='#' class='delete-form' data-form-id='{$index}'>Supprimer</a>
+                    </td>
+                  </tr>";
 						}
 					} else {
 						echo "<tr><td colspan='2'>Aucun formulaire trouvé.</td></tr>";
@@ -91,41 +93,46 @@ function cocoform_render_admin_page() {
 					?>
 					</tbody>
 				</table>
+
 			</div>
 			<script>
-				document.addEventListener('DOMContentLoaded', function() {
-					document.querySelectorAll('.delete-form').forEach(button => {
-						button.addEventListener('click', function() {
-							const formId = this.dataset.formId;
-							if (confirm('Êtes-vous sûr de vouloir supprimer ce formulaire ?')) {
-								fetch(ajaxurl, {
-									method: 'POST',
-									headers: {
-										'Content-Type': 'application/x-www-form-urlencoded',
-									},
-									body: new URLSearchParams({
-										'action': 'cocoform_delete_form',
-										'form_id': formId,
-										'_ajax_nonce': '<?php echo wp_create_nonce("cocoform_delete_form_nonce"); ?>'
-									})
-								})
-									.then(response => response.json())
-									.then(data => {
-										if (data.success) {
-											document.getElementById('form-row-' + formId).remove();
-											alert('Formulaire supprimé avec succès.');
-										} else {
-											alert('Erreur : ' + data.data);
-										}
-									})
-									.catch(error => {
-										console.error('Erreur:', error);
-										alert('Erreur lors de la suppression du formulaire.');
-									});
+				document.addEventListener('DOMContentLoaded', function () {
+					document.querySelectorAll('.delete-form').forEach(function (button) {
+						button.addEventListener('click', function (event) {
+							event.preventDefault();
+
+							if (!confirm('Voulez-vous vraiment supprimer ce formulaire ?')) {
+								return;
 							}
+
+							var formId = button.dataset.formId;
+
+							var formData = new FormData();
+							formData.append('_ajax_nonce', '<?php echo wp_create_nonce("cocoform_save_form_nonce"); ?>');
+							formData.append('action', 'cocoform_delete_form');
+							formData.append('form_id', formId);
+
+							fetch(ajaxurl, {
+								method: 'POST',
+								body: new URLSearchParams(formData)
+							})
+								.then(response => response.json())
+								.then(data => {
+									if (data.success) {
+										alert('Formulaire supprimé avec succès.');
+										button.closest('tr').remove();
+									} else {
+										alert('Erreur : ' + data.data);
+									}
+								})
+								.catch(error => {
+									console.error('Erreur:', error);
+									alert('Erreur lors de la suppression du formulaire.');
+								});
 						});
 					});
 				});
+
 			</script>
 			<?php
 			break;
@@ -136,7 +143,40 @@ add_action( 'init', 'create_block_cocoform_block_init' );
 
 function cocoform_register_ajax_endpoints() {
 	add_action('wp_ajax_cocoform_save_form', 'cocoform_save_form');
+	add_action('wp_ajax_cocoform_delete_form', 'cocoform_delete_form');
 }
+
+
+function cocoform_delete_form() {
+	check_ajax_referer('cocoform_save_form_nonce', '_ajax_nonce');
+
+	if (!current_user_can('manage_options')) {
+		wp_send_json_error('Permissions insuffisantes.');
+	}
+
+	if (!isset($_POST['form_id'])) {
+		wp_send_json_error('ID du formulaire manquant.');
+	}
+
+	$form_id = sanitize_text_field($_POST['form_id']);
+	$option_key = $form_id;
+
+	if (delete_option($option_key)) {
+		// Mettre à jour la liste des formulaires
+		$formulaires = get_option('cocoform_formulaires', []);
+		$short_id = str_replace('cocoform_', '', $form_id);
+		if (isset($formulaires[$short_id])) {
+			unset($formulaires[$short_id]);
+			update_option('cocoform_formulaires', $formulaires);
+		}
+
+		wp_send_json_success('Formulaire supprimé.');
+	} else {
+		wp_send_json_error('Erreur lors de la suppression du formulaire.');
+	}
+}
+
+
 
 function cocoform_save_form() {
 	check_ajax_referer('cocoform_save_form_nonce', '_ajax_nonce');
@@ -172,7 +212,7 @@ function cocoform_save_form() {
 	$option_key = 'cocoform_' . sanitize_title($form_name);
 	update_option($option_key, $form_data);
 
-	wp_send_json_success('Formulaire modifié.');
+	wp_send_json_success('Formulaire ajouté.');
 }
 
 add_action('admin_init', 'cocoform_register_ajax_endpoints');

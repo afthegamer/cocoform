@@ -46,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ajouter un Formulaire</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 	<style>
@@ -74,7 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		.field input[type="text"],
 		.field select,
-		.form-name input[type="text"] {
+		.form-name input[type="text"],
+		.field input[type="email"] {
 			flex: 1;
 			padding: 8px;
 			margin-right: 10px;
@@ -132,11 +133,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<div id="formFields" class="form-fields-container">
 			<!-- Champs fixes pour l'email et l'objet du message -->
 			<div class="field">
-				<input type="text" name="field_label[]" value="Email" readonly />
+				<label for="field_email">Email:</label>
 				<input type="email" name="field_email" placeholder="Adresse email" required />
 			</div>
 			<div class="field">
-				<input type="text" name="field_label[]" value="Objet" readonly />
+				<label for="field_subject">Objet:</label>
 				<input type="text" name="field_subject" placeholder="Objet du message" required />
 			</div>
 			<!-- Fin des champs fixes -->
@@ -197,15 +198,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		var newField = document.createElement('div');
 		newField.className = 'field';
 		newField.innerHTML = `
-            <span class="handle">☰</span>
-            <input type="text" name="field_label[]" placeholder="Label du champ" required />
-            <select name="field_type[]">
-                <option value="text">Texte</option>
-                <option value="email">Email</option>
-                <option value="number">Nombre</option>
-            </select>
-            <button type="button" onclick="removeField(this)">Supprimer</button>
-        `;
+        <span class="handle">☰</span>
+        <input type="text" name="field_label[]" placeholder="Label du champ" required />
+        <select name="field_type[]">
+            <option value="text">Texte</option>
+            <option value="email">Email</option>
+            <option value="number">Nombre</option>
+        </select>
+        <button type="button" onclick="removeField(this)">Supprimer</button>
+    `;
 		container.appendChild(newField);
 	}
 
@@ -213,6 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		button.parentNode.remove();
 	}
 </script>
-
 </body>
 </html>
+
