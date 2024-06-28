@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
@@ -120,6 +119,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			color: #ccc;
 			user-select: none; /* Empêche la sélection du texte lors du drag */
 		}
+
+		.select-options {
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+
+		.select-options input[type="text"] {
+			margin-bottom: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -137,8 +145,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				<input type="email" name="field_email" placeholder="Adresse email" required />
 			</div>
 			<div class="field">
-				<label for="field_subject">Objet:</label>
-				<input type="text" name="field_subject" placeholder="Objet du message" required />
+				<label for="field_subject_type">Objet:</label>
+				<select id="field_subject_type" name="field_subject_type" required>
+					<option value="text">Texte libre</option>
+					<option value="select">Liste déroulante</option>
+				</select>
+				<input type="text" id="field_subject_text" name="field_subject_text" placeholder="Objet du message" required />
+				<div id="field_subject_options" class="select-options" style="display: none;">
+					<input type="text" name="field_subject_options[]" placeholder="Option 1" />
+					<button type="button" onclick="addSubjectOption()">Ajouter une option</button>
+				</div>
 			</div>
 			<!-- Fin des champs fixes -->
 			<div class="field">
@@ -164,6 +180,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			animation: 150,
 			ghostClass: 'sortable-ghost',
 			handle: '.handle'
+		});
+
+		document.querySelector('#field_subject_type').addEventListener('change', function() {
+			var subjectType = this.value;
+			var subjectText = document.getElementById('field_subject_text');
+			var subjectOptions = document.getElementById('field_subject_options');
+
+			if (subjectType === 'text') {
+				subjectText.style.display = 'block';
+				subjectOptions.style.display = 'none';
+			} else if (subjectType === 'select') {
+				subjectText.style.display = 'none';
+				subjectOptions.style.display = 'block';
+			}
 		});
 
 		document.querySelector('#formCreator').addEventListener('submit', function(event) {
@@ -213,7 +243,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	function removeField(button) {
 		button.parentNode.remove();
 	}
+
+	function addSubjectOption() {
+		var container = document.getElementById('field_subject_options');
+		var optionCount = container.querySelectorAll('input').length;
+		var newOption = document.createElement('input');
+		newOption.type = 'text';
+		newOption.name = 'field_subject_options[]';
+		newOption.placeholder = 'Option ' + (optionCount + 1);
+		container.insertBefore(newOption, container.querySelector('button'));
+	}
 </script>
 </body>
 </html>
+
 

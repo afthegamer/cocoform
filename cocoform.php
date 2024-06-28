@@ -188,13 +188,20 @@ function cocoform_save_form() {
 	$form_name = sanitize_text_field($_POST['form_name']);
 	$fields = [];
 
+	// Champs Email
 	if (isset($_POST['field_email'])) {
 		$fields[] = ['label' => 'Email', 'type' => 'email', 'default' => sanitize_email($_POST['field_email'])];
 	}
-	if (isset($_POST['field_subject'])) {
-		$fields[] = ['label' => 'Objet', 'type' => 'text', 'default' => sanitize_text_field($_POST['field_subject'])];
+
+	// Champs Objet
+	if ($_POST['field_subject_type'] === 'text') {
+		$fields[] = ['label' => 'Objet', 'type' => 'text', 'default' => sanitize_text_field($_POST['field_subject_text'])];
+	} else {
+		$options = array_map('sanitize_text_field', $_POST['field_subject_options']);
+		$fields[] = ['label' => 'Objet', 'type' => 'select', 'options' => $options];
 	}
 
+	// Champs dynamiques
 	if (isset($_POST['field_label']) && is_array($_POST['field_label'])) {
 		$field_types = $_POST['field_type'];
 		foreach ($_POST['field_label'] as $index => $label) {
@@ -214,5 +221,6 @@ function cocoform_save_form() {
 
 	wp_send_json_success('Formulaire ajouté.');
 }
+
 
 add_action('admin_init', 'cocoform_register_ajax_endpoints');
