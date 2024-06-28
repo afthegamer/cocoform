@@ -189,10 +189,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 			if (subjectType === 'text') {
 				subjectText.style.display = 'block';
+				subjectText.required = true;
 				subjectOptions.style.display = 'none';
+				subjectOptions.querySelectorAll('input').forEach(function(input) {
+					input.required = false;
+				});
 			} else if (subjectType === 'select') {
 				subjectText.style.display = 'none';
+				subjectText.required = false;
 				subjectOptions.style.display = 'block';
+				subjectOptions.querySelectorAll('input').forEach(function(input) {
+					input.required = true;
+				});
 			}
 		});
 
@@ -256,5 +264,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </script>
 </body>
 </html>
+
 
 
