@@ -161,8 +161,28 @@ foreach ($form_data['fields'] as $field) {
 			margin-bottom: 10px;
 		}
 
-		.select-options input[type="text"] {
+		.option-field {
+			display: flex;
+			align-items: center;
 			margin-bottom: 5px;
+		}
+
+		.option-field input[type="text"] {
+			flex: 1;
+			margin-right: 10px;
+		}
+
+		.option-field button {
+			padding: 5px 10px;
+			background-color: #dc3232;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.option-field button:hover {
+			background-color: #a00;
 		}
 	</style>
 </head>
@@ -191,11 +211,14 @@ foreach ($form_data['fields'] as $field) {
 					<?php
 					if (!empty($subject_options)) {
 						foreach ($subject_options as $index => $option) {
+							echo '<div class="option-field">';
 							echo '<input type="text" name="field_subject_options[]" value="' . esc_attr($option) . '" placeholder="Option ' . ($index + 1) . '" />';
+							echo '<button type="button" onclick="removeOption(this)">Supprimer</button>';
+							echo '</div>';
 						}
 					}
 					?>
-					<button type="button" onclick="addSubjectOption()">Ajouter une option</button>
+					<button type="button" id="add-option-btn" onclick="addSubjectOption()">Ajouter une option</button>
 				</div>
 			</div>
 			<!-- Fin des champs fixes -->
@@ -304,12 +327,18 @@ foreach ($form_data['fields'] as $field) {
 
 	function addSubjectOption() {
 		var container = document.getElementById('field_subject_options');
-		var optionCount = container.querySelectorAll('input').length;
-		var newOption = document.createElement('input');
-		newOption.type = 'text';
-		newOption.name = 'field_subject_options[]';
-		newOption.placeholder = 'Option ' + (optionCount + 1);
-		container.insertBefore(newOption, container.querySelector('button'));
+		var optionCount = container.querySelectorAll('.option-field').length;
+		var newOption = document.createElement('div');
+		newOption.className = 'option-field';
+		newOption.innerHTML = `
+        <input type="text" name="field_subject_options[]" placeholder="Option ${optionCount + 1}" />
+        <button type="button" onclick="removeOption(this)">Supprimer</button>
+    `;
+		container.insertBefore(newOption, document.getElementById('add-option-btn'));
+	}
+
+	function removeOption(button) {
+		button.parentElement.remove();
 	}
 </script>
 </body>
