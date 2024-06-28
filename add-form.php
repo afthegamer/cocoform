@@ -36,12 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$redirect_url = admin_url('admin.php?page=cocoform&action=edit&id=' . urlencode(sanitize_title($form_name)));
 	wp_redirect($redirect_url);
 	exit;
-//
-//
-//	// Redirection vers la page d'édition du formulaire
-//	$redirect_url = admin_url('admin.php?page=cocoform&action=edit&id=' . urlencode(sanitize_title($form_name)));
-//	wp_redirect($redirect_url);
-//	exit; // Assurez-vous d'arrêter l'exécution du script après la redirection
 }
 ?>
 
@@ -125,8 +119,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			margin-bottom: 10px;
 		}
 
-		.select-options input[type="text"] {
+		.select-options .option-field {
+			display: flex;
+			align-items: center;
 			margin-bottom: 5px;
+		}
+
+		.select-options .option-field input[type="text"] {
+			flex: 1;
+			margin-right: 10px;
+		}
+
+		.select-options .option-field button {
+			padding: 5px 10px;
+			background-color: #dc3232;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.select-options .option-field button:hover {
+			background-color: #a00;
 		}
 	</style>
 </head>
@@ -152,8 +166,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				</select>
 				<input type="text" id="field_subject_text" name="field_subject_text" placeholder="Objet du message" required />
 				<div id="field_subject_options" class="select-options" style="display: none;">
-					<input type="text" name="field_subject_options[]" placeholder="Option 1" />
-					<button type="button" onclick="addSubjectOption()">Ajouter une option</button>
+					<div class="option-field">
+						<input type="text" name="field_subject_options[]" placeholder="Option 1" />
+						<button type="button" onclick="removeOption(this)">Supprimer</button>
+					</div>
+					<button type="button" id="add-option-btn" onclick="addSubjectOption()">Ajouter une option</button>
 				</div>
 			</div>
 			<!-- Fin des champs fixes -->
@@ -254,16 +271,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	function addSubjectOption() {
 		var container = document.getElementById('field_subject_options');
-		var optionCount = container.querySelectorAll('input').length;
-		var newOption = document.createElement('input');
-		newOption.type = 'text';
-		newOption.name = 'field_subject_options[]';
-		newOption.placeholder = 'Option ' + (optionCount + 1);
-		container.insertBefore(newOption, container.querySelector('button'));
+		var optionCount = container.querySelectorAll('.option-field').length;
+		var newOption = document.createElement('div');
+		newOption.className = 'option-field';
+		newOption.innerHTML = `
+        <input type="text" name="field_subject_options[]" placeholder="Option ${optionCount + 1}" />
+        <button type="button" onclick="removeOption(this)">Supprimer</button>
+    `;
+		container.insertBefore(newOption, document.getElementById('add-option-btn'));
+	}
+
+	function removeOption(button) {
+		button.parentElement.remove();
 	}
 </script>
 </body>
 </html>
-
-
-
