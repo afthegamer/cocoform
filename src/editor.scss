@@ -1,9 +1,63 @@
-/**
- * The following styles get applied inside the editor only.
- *
- * Replace them with your own styles or remove the file completely.
- */
+.cocoform-wrapper {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 20px;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-.wp-block-create-block-cocoform {
-	border: 1px dotted #f00;
+.cocoform-form {
+	display: flex;
+	flex-direction: column;
+}
+
+.cocoform-field {
+	margin-bottom: 15px;
+}
+
+.cocoform-label {
+	margin-bottom: 5px;
+	font-weight: bold;
+	display: block;
+}
+
+.cocoform-input,
+.cocoform-select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+	box-sizing: border-box;
+}
+
+.cocoform-input:focus,
+.cocoform-select:focus {
+	border-color: #0073aa;
+	box-shadow: 0 0 5px rgba(0, 115, 170, 0.5);
+	outline: none;
+}
+
+/* Media query pour les petits écrans */
+@media (max-width: 600px) {
+	.cocoform-wrapper {
+		padding: 10px;
+	}
+
+	.cocoform-input,
+	.cocoform-select {
+		font-size: 14px;
+		padding: 8px;
+	}
+}
+
+/* Media query pour les très petits écrans */
+@media (max-width: 400px) {
+	.cocoform-input,
+	.cocoform-select {
+		font-size: 12px;
+		padding: 6px;
+	}
 }
