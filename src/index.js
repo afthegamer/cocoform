@@ -1,24 +1,33 @@
-// import { registerBlockType } from '@wordpress/blocks';
-// import { TextControl } from '@wordpress/components';
-
-
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps } from '@wordpress/block-editor';
-import { useEffect, useState } from '@wordpress/element';
-import './editor.scss';
+import { useBlockProps, InnerBlocks, BlockControls } from '@wordpress/block-editor';
+import { Toolbar, ToolbarButton } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import Edit from './edit';
+import Save from './save';
+import './editor.scss';  // Importation du CSS de l'éditeur
+import './style.scss';   // Importation du CSS pour le front-end
 
-registerBlockType('create-block/cocoform', {
-	title: 'Coco Form',
-	icon: 'smiley',
+registerBlockType('cocoform/contact-form', {
+	title: 'Formulaire de Contact',
+	description: 'Un bloc pour formulaire de contact.',
 	category: 'widgets',
-	edit() {
+	attributes: {
+		formData: {
+			type: 'object',
+			default: null,
+		},
+	},
+	edit: ({ attributes, setAttributes, clientId, isSelected }) => {
 		const blockProps = useBlockProps();
 		const [formData, setFormData] = useState(null);
 
 		useEffect(() => {
 			fetch('/wp-json/cocoform/v1/form/brad')
 				.then(response => response.json())
-				.then(data => setFormData(data))
+				.then(data => {
+					setFormData(data);
+					setAttributes({ formData: data });
+				})
 				.catch(error => console.error('Erreur:', error));
 		}, []);
 
@@ -28,6 +37,22 @@ registerBlockType('create-block/cocoform', {
 
 		return (
 			<div {...blockProps} className="cocoform-wrapper">
+				{isSelected && (
+					<BlockControls>
+						<Toolbar>
+							<ToolbarButton
+								icon="trash"
+								label="Supprimer le bloc"
+								onClick={() => wp.data.dispatch('core/block-editor').removeBlock(clientId)}
+							/>
+							<ToolbarButton
+								icon="move"
+								label="Déplacer le bloc"
+								onClick={() => wp.data.dispatch('core/block-editor').moveBlock(clientId, /*fromIndex, toIndex*/)}
+							/>
+						</Toolbar>
+					</BlockControls>
+				)}
 				<form className="cocoform-form">
 					{formData.fields.map((field, index) => (
 						<div className="cocoform-field" key={index}>
@@ -35,6 +60,7 @@ registerBlockType('create-block/cocoform', {
 							{field.type === 'text' && <input type="text" className="cocoform-input" />}
 							{field.type === 'email' && <input type="email" className="cocoform-input" />}
 							{field.type === 'number' && <input type="number" className="cocoform-input" />}
+							{field.type === 'textarea' && <textarea className="cocoform-textarea" />}
 							{field.type === 'select' && (
 								<select className="cocoform-select">
 									{field.options.map((option, idx) => (
@@ -48,8 +74,16 @@ registerBlockType('create-block/cocoform', {
 			</div>
 		);
 	},
-	save() {
-		return null; // Le rendu est fait côté client
+	save: ({ attributes }) => {
+		const blockProps = useBlockProps.save();
+		return (
+			<div {...blockProps}>
+				<div className="cocoform-wrapper">
+					<input type="text" value={attributes.email} readOnly />
+					<input type="text" value={attributes.message} readOnly />
+					<InnerBlocks.Content />
+				</div>
+			</div>
+		);
 	},
 });
-

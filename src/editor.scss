@@ -1,11 +1,23 @@
 .cocoform-wrapper {
-	max-width: 600px;
-	margin: 0 auto;
+	border: 1px solid #e2e2e2;
 	padding: 20px;
-	background: #f9f9f9;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	background-color: #f9f9f9;
+
+	.block-editor-block-list__block {
+		margin-bottom: 10px;
+	}
+
+	.block-editor-block-list__block-controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.block-editor-block-list__block-mover {
+		display: flex;
+		align-items: center;
+	}
 }
 
 .cocoform-form {
