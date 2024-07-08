@@ -17,7 +17,8 @@ registerBlockType('cocoform/contact-form', {
 			default: null,
 		},
 	},
-	edit: ({ attributes, setAttributes, clientId, isSelected }) => {
+	edit: Edit,
+	/*edit: ({ attributes, setAttributes, clientId, isSelected }) => {
 		console.log('Attributes in edit:', attributes);
 		const blockProps = useBlockProps();
 		const [formData, setFormData] = useState(null);
@@ -49,7 +50,7 @@ registerBlockType('cocoform/contact-form', {
 							<ToolbarButton
 								icon="move"
 								label="Déplacer le bloc"
-								onClick={() => wp.data.dispatch('core/block-editor').moveBlock(clientId, /*fromIndex, toIndex*/)}
+								onClick={() => wp.data.dispatch('core/block-editor').moveBlock(clientId, /!*fromIndex, toIndex*!/)}
 							/>
 						</Toolbar>
 					</BlockControls>
@@ -74,7 +75,7 @@ registerBlockType('cocoform/contact-form', {
 				</form>
 			</div>
 		);
-	},
+	},*/
 	save: Save,
 	// save: ({ attributes }) => {
 	// 	console.log('Attributes in save:', attributes);

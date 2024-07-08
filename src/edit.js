@@ -30,11 +30,6 @@ const Edit = ({ attributes, setAttributes, clientId, isSelected }) => {
 							label="Supprimer le bloc"
 							onClick={() => wp.data.dispatch('core/block-editor').removeBlock(clientId)}
 						/>
-						<ToolbarButton
-							icon="move"
-							label="Déplacer le bloc"
-							onClick={() => wp.data.dispatch('core/block-editor').moveBlock(clientId, /*fromIndex, toIndex*/)}
-						/>
 					</ToolbarGroup>
 				</BlockControls>
 			)}
