@@ -18,6 +18,7 @@ registerBlockType('cocoform/contact-form', {
 		},
 	},
 	edit: ({ attributes, setAttributes, clientId, isSelected }) => {
+		console.log('Attributes in edit:', attributes);
 		const blockProps = useBlockProps();
 		const [formData, setFormData] = useState(null);
 
@@ -74,16 +75,19 @@ registerBlockType('cocoform/contact-form', {
 			</div>
 		);
 	},
-	save: ({ attributes }) => {
-		const blockProps = useBlockProps.save();
-		return (
-			<div {...blockProps}>
-				<div className="cocoform-wrapper">
-					<input type="text" value={attributes.email} readOnly />
-					<input type="text" value={attributes.message} readOnly />
-					<InnerBlocks.Content />
-				</div>
-			</div>
-		);
-	},
+	save: Save,
+	// save: ({ attributes }) => {
+	// 	console.log('Attributes in save:', attributes);
+	// 	console.log("brad");
+	// 	const blockProps = useBlockProps.save();
+	// 	return (
+	// 		<div {...blockProps}>
+	// 			<div className="cocoform-wrapper">
+	// 				<input type="text" value={attributes.email} readOnly />
+	// 				<input type="text" value={attributes.message} readOnly />
+	// 				<InnerBlocks.Content />
+	// 			</div>
+	// 		</div>
+	// 	);
+	// },
 });
